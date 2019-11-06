@@ -1,0 +1,35 @@
+body {
+    background-color: #191414;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+}
+
+#nav-bar {
+    background-color: #ffa600;
+    font-size: 150%;
+    padding: 10pt;
+}
+
+#nav-bar-container {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    left: 0;
+}
+
+/* #login {
+    text-align: right;
+} */
+
+a {
+    color: white;
+    font-style: normal;
+    text-decoration: none;
+}
+
+#body {
+    position: relative;
+    top: 76px;
+    width: 90%;
+    left: 5%;
+}
