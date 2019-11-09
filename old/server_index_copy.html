@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+      window.onSpotifyWebPlaybackSDKReady = () => {
+      const token = 'BQAcqeeyxPd9jqzE994L7liUToR8dpKHe2ak5TDs2ufjI1OHwuvaTi4CPvZYEFrvo3rBvf7w9KbBleq0LHn4g1nZPpkNY3FVHXGtjl-zOBtjRw95KBb0LAaKvejcKLkPp4_LfCTeaW5jLACkgF1YF2mLMjzPzfn7n25n8tIm59Agzs2RaOXdBQ';
+      const player = new Spotify.Player({
+        name: 'WHS Commons Music',
+        getOAuthToken: cb => { cb(token); }
+      });
+
+      // Error handling
+      player.addListener('initialization_error', ({ message }) => { console.error(message); });
+      player.addListener('authentication_error', ({ message }) => { console.error(message); });
+      player.addListener('account_error', ({ message }) => { console.error(message); });
+      player.addListener('playback_error', ({ message }) => { console.error(message); });
+
+      // Playback status updates
+      player.addListener('player_state_changed', state => { console.log(state); });
+      // player.addListener('player_state_changed', state => { set_album_cover(state); });
+
+      // Ready
+      player.addListener('ready', ({ device_id }) => {
+        console.log('Ready with Device ID', device_id);
+      });
+
+      // Not Ready
+      player.addListener('not_ready', ({ device_id }) => {
+        console.log('Device ID has gone offline', device_id);
+      });
+
+      // Connect to the player!
+      player.connect();
+    };
+
+    function resume(){
+      player.resume();
+      console.log("play");
+    }
+
+    function pause(){
+      player.pause();
+      console.log("pause");
+    }
+
+    </script>
+    <title>Spotify Web Playback SDK</title>
+  </head>
+  <body>
+    <h1>Spotify Web Playback SDK</h1>
+    <h2>Open your console log: <code>View > Developer > JavaScript Console</code></h2>
+    <!-- <a href="https://accounts.spotify.com/authorize?client_id=7cf79120b8d6461fa7a3501e50b972d2&response_type=code&redirect_uri=http://commonsmusic.ddns.net/login&scope=streaming%20user-read-currently-playing%20user-modify-playback-state%20user-read-playback-state&state=none"><p>LOGIN</p></a> -->
+    <button onclick="pause">Pause</button>
+    <button onclick="play">Play</button>
+  </body>
+</html>

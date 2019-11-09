@@ -1,0 +1,21 @@
+{
+  "name": "commons_music",
+  "version": "1.0.0",
+  "description": "Music for the Commons",
+  "main": "music.js",
+  "scripts": {
+    "test": "",
+    "start": "npx nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/spotify-web-playback-sdk": "^0.1.6",
+    "express": "^4.17.1",
+    "pug": "^2.0.4",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "spotify-web-api-node": "^4.0.0",
+    "use-spotify-web-playback-sdk": "^0.2.2"
+  }
+}
