@@ -4,30 +4,12 @@ body {
     color: white;
 }
 
-.navbar {
-    background-color: #ffa600;
-    padding: 10pt;
-}
-
-.navbar-container {
-    left: 0;
-    position: fixed;
-    width: 100%;
-    height: auto;
-}
-
 header {
     width: 100%;
     height: auto;
     position: fixed;
     top: 0;
     z-index: 80;
-}
-
-a {
-    font-style: normal;
-    text-decoration: none;
-    font-size: 2em;
 }
 
 main {
@@ -38,13 +20,10 @@ main {
     /* vertical-align: 10px; */
 }
 
-#body {
-    font-size: larger;
-}
-
-#navbar-title {
-    display: inline;
-    font-size: 3ch;
+a {
+    font-style: normal;
+    text-decoration: none;
+    font-size: 2em;
 }
 
 ul {
@@ -58,12 +37,24 @@ li a {
     /* padding: 8px; */
 }
 
-.button-container {
-    float: right;
-}
-
 li {
     display: inline;
+}
+
+.navbar {
+    background-color: #ffa600;
+    padding: 10pt;
+}
+
+.navbar-container {
+    left: 0;
+    position: fixed;
+    width: 100%;
+    height: auto;
+}
+
+.button-container {
+    float: right;
 }
 
 .navbar-link {
@@ -76,4 +67,13 @@ li {
 
 .navbar-spacer {
     width: 1em;
+}
+
+#body {
+    font-size: larger;
+}
+
+#navbar-title {
+    display: inline;
+    font-size: 3ch;
 }
