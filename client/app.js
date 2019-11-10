@@ -14,9 +14,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/lorem', (req, res) => {
-    res.render("lorem")
+    res.render("lorem");
 });
 
 app.get('/test', (req, res) => {
-    res.render("test")
+    res.render("test");
+});
+
+app.get('/about', (req, res) => {
+    res.render("about");
 });

@@ -1,16 +1,12 @@
 body {
-    background-color: #191414;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: white;
+    /* color: white; */
+    /* background-color: #191414; */
 }
 
-header {
-    width: 100%;
-    height: auto;
-    position: fixed;
-    top: 0;
-    z-index: 80;
-}
+/* header {
+    background-color: #ffa600;
+} */
 
 main {
     position: relative;
@@ -23,57 +19,5 @@ main {
 a {
     font-style: normal;
     text-decoration: none;
-    font-size: 2em;
-}
-
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-li a {
-    display: block;
-    /* padding: 8px; */
-}
-
-li {
-    display: inline;
-}
-
-.navbar {
-    background-color: #ffa600;
-    padding: 10pt;
-}
-
-.navbar-container {
-    left: 0;
-    position: fixed;
-    width: 100%;
-    height: auto;
-}
-
-.button-container {
-    float: right;
-}
-
-.navbar-link {
-    color: white;
-}
-
-.navbar-link:hover {
-    color: #eaeaea;
-}
-
-.navbar-spacer {
-    width: 1em;
-}
-
-#body {
-    font-size: larger;
-}
-
-#navbar-title {
-    display: inline;
-    font-size: 3ch;
+    /* font-size: 2em; */
 }
