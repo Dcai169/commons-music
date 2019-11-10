@@ -6,14 +6,13 @@ body {
 
 .navbar {
     background-color: #ffa600;
-    font-size: 1em;
     padding: 10pt;
 }
 
 .navbar-container {
-    left: 0ch;
-    position: absolute;
-    width: 100vw;
+    left: 0;
+    position: fixed;
+    width: 100%;
     height: auto;
 }
 
@@ -45,6 +44,7 @@ main {
 
 #navbar-title {
     display: inline;
+    font-size: 3ch;
 }
 
 ul {
@@ -55,7 +55,7 @@ ul {
 
 li a {
     display: block;
-    padding: 8px;
+    /* padding: 8px; */
 }
 
 .button-container {
@@ -68,4 +68,12 @@ li {
 
 .navbar-link {
     color: white;
+}
+
+.navbar-link:hover {
+    color: #eaeaea;
+}
+
+.navbar-spacer {
+    width: 1em;
 }
