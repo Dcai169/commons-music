@@ -1,0 +1,16 @@
+{
+  "name": "commons-music-client",
+  "version": "1.0.0",
+  "description": "Client of Commons Music",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pug": "^2.0.4"
+  }
+}

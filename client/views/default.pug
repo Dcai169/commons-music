@@ -1,0 +1,27 @@
+doctype html
+html
+    head
+        title Commons Music
+        link(rel="stylesheet", href="styles.css", type="text/css")
+        meta(http-equiv="Content-Type", content="text/html;charset=UTF-8")
+        meta(name="viewport" content="width=device-width", initial-scale=1)
+    body
+        header
+            //- h1 WHS Commons Music
+            div.navbar-container
+                div.navbar
+                    |
+                    h1#navbar-title WHS Commons Music 
+                    | 
+                    div.button-container
+                        ul
+                            |
+                            li 
+                            a.navbar-link(href="/lorem") Lorem
+                            | 
+                            li
+                            a.navbar-link(href="/test") Test
+                            | 
+        main
+            div#body
+                block content
