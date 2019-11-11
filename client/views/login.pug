@@ -1,12 +1,11 @@
 extends default
 
 block append head
-    script(src="https://apis.google.com/js/platform.js" async defer)
-    meta(name="google-signin-client_id" content="879508620239-iq626pk2vdu2jsgv70ri6vj8nbc9jufu.apps.googleusercontent.com")
-    script(src="login.js")
+    //- script(src="https://apis.google.com/js/platform.js" async defer)
+    //- meta(name="google-signin-client_id" content="879508620239-iq626pk2vdu2jsgv70ri6vj8nbc9jufu.apps.googleusercontent.com")
+    //- script(src="login.js")
 
 block content
-    div(class="row justify-content-center m-2")
-        div(class="col-lg-4 col-md-4 col-sm-6 col-xs-12")
-            div
-                div(class="g-signin2" data-onsuccess="onSignIn")    
+    div.container
+        div(class="row justify-content-center m-2")
+            div(class="g-signin2" data-onsuccess="onSignIn")

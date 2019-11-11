@@ -5,13 +5,20 @@ html(lang="en")
             meta(charset="UTF-8")
             meta(http-equiv="X-UA-Compatible", content="IE-edge")
             meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+            link(rel="shortcut icon", href="favicon.png" type="image/png")
+            
             title Commons Music
 
             link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous")
-            link(rel="stylesheet", href="styles")
+            //- link(rel="stylesheet", href="styles")
+
+            script(src="https://apis.google.com/js/platform.js" async defer)
+            meta(name="google-signin-client_id" content="879508620239-iq626pk2vdu2jsgv70ri6vj8nbc9jufu.apps.googleusercontent.com")
+            script(src="login.js")
+
     body
-        div.page-header
-            header
+        header
+            div.page-header
                 nav(class="navbar navbar-expand-lg navbar-light bg-light")
                     a(class="navbar-brand", href="/")
                         h1 WHS Commons Music
@@ -19,19 +26,26 @@ html(lang="en")
                         span(class="navbar-toggler-icon")
                     div(class="collapse navbar-collapse" id="navbarSupportedContent")
                         ul(class="navbar-nav mr-auto")
-                            li(class="nav-link" href="/lorem")
-                                a(class="nav-link", href="/lorem") Lorem
-                            li(class="nav-link" href="/test")
-                                a(class="nav-link", href="/test") Test
-                            li(class="nav-link" href="/login")
-                                a(class="nav-link", href="/login") Login
+                            li(class="nav-link" href="/about")
+                                
                             li(class="nav-link" href="/dashboard")
                                 a(class="nav-link", href="/dashboard") Dashboard
-                            li(class="nav-link" href="/about")
-                                a(class="nav-link", href="/about") About
-        main
+                            
+                        ul(class="navbar-nav float-right")
+                            li(class="nav-link navbar-right" href="/login")
+                                a(class="btn btn-link navbar-right", href="/login") Login
+                            li(class="nav-link navbar-right")
+                                a(href="#" class="btn btn-link" role="button" onclick="signOut()") Sign out
+        main(role="main")
+            //- div.container
+                div.m-3
+            block content
+
+        footer.footer
             div.container
-                block content
+                hr
+                a(class="btn btn-link", href="/about") About   
+
 
         script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous")

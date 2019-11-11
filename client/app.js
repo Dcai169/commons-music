@@ -10,7 +10,7 @@ app.listen(port, () => {
 });
 
 app.get('/', (req, res) => {
-    res.render("default");
+    res.render("home");
 });
 
 app.get('/lorem', (req, res) => {
@@ -31,4 +31,8 @@ app.get('/dashboard', (req, res) => {
 
 app.get('/login', (req, res) => {
     res.render("login");
+});
+
+app.get('/denied', (req, res) => {
+    res.render("denied");
 });
