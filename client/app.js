@@ -26,7 +26,9 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-    res.render("dashboard");
+    res.render("dashboard", {
+        suggestSuccess: -1
+    });
 });
 
 app.get('/login', (req, res) => {
@@ -35,4 +37,12 @@ app.get('/login', (req, res) => {
 
 app.get('/denied', (req, res) => {
     res.render("denied");
+});
+
+app.post('/dashboard', (req, res) => {
+    // console.log(req)
+    // console.log(res);
+    res.render("dashboard", {
+        suggestSuccess: 1
+    });
 });
