@@ -5,7 +5,8 @@ const bodyParser = require("body-parser")
 
 app.set('view engine', 'pug');
 app.use(express.static(__dirname+"/public"));
-// app.use(bodyParser)
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.listen(port, () => {
     console.log('Express running on port ' + port);
@@ -42,8 +43,7 @@ app.get('/denied', (req, res) => {
 });
 
 app.post('/dashboard', (req, res) => {
-    // console.log(req.body);
-    // console.log(res.body);
+    console.log(req.body);
     res.render("dashboard", {
         suggestSuccess: 1
     });
