@@ -32,8 +32,11 @@ html(lang="en")
                                 a(class="nav-link", href="/dashboard") Dashboard
                             
                         ul(class="navbar-nav float-right")
-                            li(class="nav-link navbar-right" href="/login")
-                                a(class="btn btn-link navbar-right", href="/login") Login
+                            //- li(class="nav-link navbar-right" href="/login")
+                            //-     a(class="btn btn-link navbar-right", href="/login") Login
+                            li(class="nav-link navbar-right")
+                                div(class="row justify-content-center")
+                                    div(class="g-signin2" data-onsuccess="onSignIn")
                             li(class="nav-link navbar-right")
                                 a(href="#" class="btn btn-link" role="button" onclick="signOut()") Sign out
         main(role="main")

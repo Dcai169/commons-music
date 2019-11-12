@@ -1,9 +1,11 @@
 const express = require('express');
 const app = express();
 const port = 2100;
+const bodyParser = require("body-parser")
 
 app.set('view engine', 'pug');
 app.use(express.static(__dirname+"/public"));
+// app.use(bodyParser)
 
 app.listen(port, () => {
     console.log('Express running on port ' + port);
@@ -40,8 +42,8 @@ app.get('/denied', (req, res) => {
 });
 
 app.post('/dashboard', (req, res) => {
-    // console.log(req)
-    // console.log(res);
+    // console.log(req.body);
+    // console.log(res.body);
     res.render("dashboard", {
         suggestSuccess: 1
     });
