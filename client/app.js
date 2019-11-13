@@ -8,6 +8,7 @@ function isLunchFriday() {
     var isFriday = (time.getDay() == 5);
     var isLunchHour = ((time.getHours() >= 11 && time.getMinutes() >= 44) && (time.getHours() <= 13 && time.getMinutes() <= 12));
     return isFriday && isLunchHour;
+    // return true;
 }
 
 app.set('view engine', 'pug');
