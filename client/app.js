@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const port = 2100;
-const bodyParser = require("body-parser")
+const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 
 function isLunchFriday() {
     var time = new Date();
@@ -15,6 +16,7 @@ app.set('view engine', 'pug');
 app.use(express.static(__dirname+"/public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 app.listen(port, () => {
     console.log('Express running on port ' + port);
@@ -57,4 +59,10 @@ app.post('/dashboard', (req, res) => {
         suggestSuccess: 1,
         skipActive: isLunchFriday()
     });
+});
+
+// Add new routes before this line!
+app.get("*", (req, res) => {
+    res.status(404);
+    res.render("404", {url: req.url});
 });
