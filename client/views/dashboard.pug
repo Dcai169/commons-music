@@ -13,12 +13,16 @@ block content
                 div(class="col-6")
                     div(class="jumbotron")
                         h4.text-center
-                            a(href="#" class="btn btn-primary btn-lg" roll="button" onclick="voteToSkip()") Skip
+                            if skipActive === true
+                                a(href="#" class="btn btn-primary btn-lg" role="button" onclick="voteToSkip()") Skip
+                            else
+                                div(class="alert alert-warning text-center" role="alert") Skipping is not active now.
+                                a(href="#" class="btn btn-primary btn-lg disabled" tabindex="-1" role="button" onclick="" aria-disabled="true") Skip
                 div(class="col-6")
                     div(class="")
                         form(method="post")
                             div.form-group
                                 label(for="inputSpotifyURI") Suggest a Song
-                                input(type="text" class="form-control" id="inputSpotifyURI" placeholder="spotify:track:7Ghlk7Il098yCjg4BQjzvb")
+                                input(type="text" class="form-control" name="inputSpotifyURI" placeholder="spotify:track:7Ghlk7Il098yCjg4BQjzvb")
                                 br
-                                input(type="submit" value="Suggest" class="btn btn-primary") 
+                                button(type="submit" class="btn btn-primary") Suggest
