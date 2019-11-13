@@ -5,9 +5,9 @@ const bodyParser = require("body-parser")
 
 function isLunchFriday() {
     var time = new Date();
-    var isFriday = (time.getDay() == 5)
-    var isLunchHour = ((time.getHours() >= 11 && time.getMinutes() >= 44) && (time.getHours() <= 13 && time.getMinutes() <= 12))
-    return isFriday && isLunchHour
+    var isFriday = (time.getDay() == 5);
+    var isLunchHour = ((time.getHours() >= 11 && time.getMinutes() >= 44) && (time.getHours() <= 13 && time.getMinutes() <= 12));
+    return isFriday && isLunchHour;
 }
 
 app.set('view engine', 'pug');
