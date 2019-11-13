@@ -45,14 +45,6 @@ app.get('/dashboard', (req, res) => {
     });
 });
 
-app.get('/login', (req, res) => {
-    res.render("login");
-});
-
-app.get('/denied', (req, res) => {
-    res.render("denied");
-});
-
 app.post('/dashboard', (req, res) => {
     console.log(req.body)
     res.render("dashboard", {
@@ -61,8 +53,20 @@ app.post('/dashboard', (req, res) => {
     });
 });
 
+app.get('/login', (req, res) => {
+    res.render("login");
+});
+
+app.get('/denied', (req, res) => {
+    res.render("denied");
+});
+
+app.get('/auth_redirect', (req, res) => {
+    res.render("auth_redirect");
+});
+
 // Add new routes before this line!
-app.get("*", (req, res) => {
+app.get('*', (req, res) => {
     res.status(404);
     res.render("404", {url: req.url});
 });

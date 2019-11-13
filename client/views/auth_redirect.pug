@@ -1,0 +1,12 @@
+extends default
+
+block append head
+    script("redir.js")
+
+block content
+    div(class="container text-center")
+        div(class="jumbotron m-3")
+            h1 Thanks for signing in!
+            h4 You will be redirected shortly.
+            span(onload="alert('Loaded')")
+    
