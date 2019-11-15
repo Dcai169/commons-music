@@ -24,23 +24,15 @@ html(lang="en")
                         h1 Commons Music
                     button(class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation")
                         span(class="navbar-toggler-icon")
-                    div(class="collapse navbar-collapse" id="navbarSupportedContent")
-                        ul(class="navbar-nav mr-auto")
-                            //- li(class="nav-link" href="/about")s
-                            if (isAuthed) 
-                                li(class="nav-link" href="/dashboard")
-                                    a(class="nav-link", href="/dashboard") Dashboard
-                            
-                        ul(class="navbar-nav float-right")
-                            //- li(class="nav-link navbar-right" href="/login")
-                            //-     a(class="btn btn-link navbar-right", href="/login") Login
-                            if (!isAuthed) 
-                                li(class="nav-link navbar-right")
-                                    div(class="row justify-content-center")
-                                        div(id="signin-button" class="g-signin2" data-onsuccess="onSignIn")
+                    div(class="collapse navbar-collapse" id="navbarSupportedContent") 
+                        ul(class="navbar-nav float-right ml-auto")
+                            li(class="nav-link" href="/dashboard")
+                                a(class="nav-link", href="/dashboard") Dashboard
+                            li(class="nav-link navbar-right" href="/login")
+                                a(class="btn btn-link navbar-right", href="/login") Login
                             //- else
                             li(class="nav-link navbar-right")
-                                a(href="#" class="btn btn-link" role="button" onclick="signOut()") Sign out
+                                a(href="/logout" class="btn btn-link" role="button") Sign out
         main(role="main")
             block content
 
