@@ -1,0 +1,3 @@
+install jquery (npm install jquery)
+install passport (npm install passport passport-google-oauth2)
+store user state in session (https://developers.google.com/identity/sign-in/web/session-state, )
