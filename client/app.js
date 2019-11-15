@@ -4,20 +4,49 @@ const port = 2100;
 
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-const session = require("express-session")
+const session = require("express-session");
+const flash = require("express-flash");
 
 const passport = require("passport");
 const GoogleStratagy = require('passport-google-oauth20').Strategy;
 const fs = require('fs');
-const client_credentials = JSON.parse(fs.readFileSync('./client_secret.json', {encoding: 'utf-8'}));
+const client_credentials = JSON.parse(fs.readFileSync('./client_secret.json', { encoding: 'utf-8' }));
 var scopes = ['email', 'profile'];
 
 function isLunchFriday() {
     var time = new Date();
     var isFriday = (time.getDay() == 5);
-    var isLunchHour = ((time.getHours() >= 11 && time.getMinutes() >= 44) && (time.getHours() <= 13 && time.getMinutes() <= 12));
+    var isBeforeLunchStart = time.getHours() <= 11 && time.getMinutes() <= 44
+    var isAfterLunchEnd = time.getHours() >= 13 && time.getMinutes() >= 12
+    var isLunchHour = !isBeforeLunchStart && !isAfterLunchEnd;
     return isFriday && isLunchHour;
     // return true;
+}
+
+// Middleware functions
+function continueIfAuth(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+
+    res.redirect('/login');
+}
+
+function continueIfUnauth(req, res, next) {
+    if (req.isAuthenticated()) {
+        return res.redirect('/dashboard')
+    }
+
+    next();
+}
+
+function isOfDomain(req, res, next) {
+    if (req.user.emails[0].value.includes("wayland.k12.ma.us")){
+        return next();
+    }
+
+    req.flash('error', 'Domain Error');
+    res.redirect('/logout');
 }
 
 // Passport session setup.
@@ -59,49 +88,63 @@ passport.use(new GoogleStratagy({
 ));
 
 app.set('view engine', 'pug');
-app.use(express.static(__dirname+"/public"));
+app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
     secret: 'superSecret', 
     saveUninitialized: false, 
     resave: false, 
-    cookie: {maxAge: 3600000}
+    cookie: { maxAge: 1000*60*60*60*24*365 }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 app.listen(port, () => {
     console.log('Express running on port ' + port);
 });
 
-app.get('/', (req, res) => {
-    res.render("home");
+app.get('/', continueIfUnauth, (req, res) => {
+    res.render("home", {
+        isAuth: req.isAuthenticated()
+    });
 });
 
-app.get('/lorem', (req, res) => {
-    res.render("lorem");
-});
+// app.get('/lorem', (req, res) => {
+//     res.render("lorem");
+// });
 
 app.get('/test', (req, res) => {
-    res.render("test");
+    res.render("test", {
+        isAuth: req.isAuthenticated(),
+        key: "req.user.emails[0].value",
+        value: JSON.stringify(req.user.emails[0].value),
+        type: typeof req.user.emails[0].value
+    });
 });
 
 app.get('/about', (req, res) => {
-    res.render("about");
+    res.render("about", {
+        isAuth: req.isAuthenticated()
+    });
 });
 
-app.get('/dashboard', (req, res) => {
+// TODO: Implement Domain Verification
+app.get('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
     res.render("dashboard", {
+        isAuth: req.isAuthenticated(),
         suggestSuccess: -1,
         skipActive: isLunchFriday()
     });
 });
 
-app.post('/dashboard', (req, res) => {
+// TODO: Implement Domain Verification
+app.post('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
     console.log(req.body)
     res.render("dashboard", {
+        isAuth: req.isAuthenticated(),
         suggestSuccess: 1,
         skipActive: isLunchFriday()
     });
@@ -111,7 +154,7 @@ app.post('/dashboard', (req, res) => {
 //     res.render("login");
 // });
 
-app.get('/login', passport.authenticate('google', {scope: scopes}));
+app.get('/login', continueIfUnauth, passport.authenticate('google', { scope: scopes }));
 
 app.get('/denied', (req, res) => {
     res.render("denied");
@@ -142,6 +185,7 @@ app.get('/logout', (req, res) => {
 app.get('*', (req, res) => {
     res.status(404);
     res.render("404", {
-        url: req.url,
+        isAuth: req.isAuthenticated(),
+        url: req.url
     });
 });
