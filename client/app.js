@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const port = 2100;
+const httpPort = 2100;
+const socketPort = 2101;
 
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
@@ -41,7 +42,7 @@ function continueIfUnauth(req, res, next) {
 }
 
 function isOfDomain(req, res, next) {
-    if (req.user.emails[0].value.includes("wayland.k12.ma.us")){
+    if (req.user.emails[0].value.split("@")[1].includes("wayland.k12.ma.us")){
         return next();
     }
 
@@ -102,8 +103,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-app.listen(port, () => {
-    console.log('Express running on port ' + port);
+app.listen(httpPort, () => {
+    console.log('Express running on port ' + httpPort);
 });
 
 app.get('/', continueIfUnauth, (req, res) => {
