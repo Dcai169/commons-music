@@ -14,8 +14,24 @@ const passport = require("passport");
 const GoogleStratagy = require('passport-google-oauth20').Strategy;
 const fs = require('fs');
 const client_credentials = JSON.parse(fs.readFileSync('./client_secret.json', { encoding: 'utf-8' }));
-var scopes = ['email', 'profile'];
+const scopes = ['email', 'profile'];
 
+const votesToSkip = [];
+const suggestions = [];
+
+// Function to remove array item by value
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
+
+// is it lunchtime friday?
 function isLunchFriday() {
     var time = new Date();
     var isFriday = (time.getDay() == 5);
@@ -24,6 +40,14 @@ function isLunchFriday() {
     var isLunchHour = !isBeforeLunchStart && !isAfterLunchEnd;
     // return isFriday && isLunchHour;
     return true;
+}
+
+function handleSkip(uid, vote) {
+    if (!votesToSkip.includes(uid) && vote){
+        votesToSkip.push(uid);
+    } else if (!vote){
+        votesToSkip.remove(uid);
+    }
 }
 
 // Middleware functions
@@ -45,7 +69,7 @@ function continueIfUnauth(req, res, next) {
 
 function isOfDomain(req, res, next) {
     if (req.user){
-        if (req.user.emails[0].value.split("@")[1].includes("wayland.k12.ma.us")){
+        if (req.user._json.hd.includes("wayland.k12.ma.us")){
             return next();
         }
     } else {
@@ -132,9 +156,9 @@ app.get('/', continueIfUnauth, (req, res) => {
 app.get('/test', (req, res) => {
     res.render("test", {
         isAuth: req.isAuthenticated(),
-        key: "req.user.emails[0].value",
-        value: JSON.stringify(req.user.emails[0].value),
-        type: typeof req.user.emails[0].value
+        key: "req.user._json.sub",
+        value: JSON.stringify(req.user._json.sub),
+        type: typeof req.user._json.sub
     });
 });
 
@@ -144,24 +168,23 @@ app.get('/about', (req, res) => {
     });
 });
 
-// TODO: Implement Domain Verification
 app.get('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
     res.render("dashboard", {
         isAuth: req.isAuthenticated(),
+        userID: req.user._json.sub,
         suggestSuccess: -1,
         skipActive: isLunchFriday()
-    });
+    });                     
 });
 
-// TODO: Implement Domain Verification
-app.post('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
-    console.log(req.body)
-    res.render("dashboard", {
-        isAuth: req.isAuthenticated(),
-        suggestSuccess: 1,
-        skipActive: isLunchFriday()
-    });
-});
+// app.post('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
+//     console.log(req.body)
+//     res.render("dashboard", {
+//         isAuth: req.isAuthenticated(),
+//         suggestSuccess: 1,
+//         skipActive: isLunchFriday()
+//     });
+// });
 
 // app.get('/login', (req, res) => {
 //     res.render("login");
@@ -195,14 +218,25 @@ app.get('/logout', (req, res) => {
 });
 
 io.on('connection', socket => {
-    console.log("new user connected")
-    socket.emit('suggest-text', 'spotify:track:7Ghlk7Il098yCjg4BQjzvb');
-    // socket.on('disconnect', () => {
-    //     // code code code
-    // });
-    // socket.on('event', data => {
-    //     // code code code
-    // });
+    console.log(`user id ${socket.id} connected`);
+    // socket.emit('suggest-text', 'spotify:track:7Ghlk7Il098yCjg4BQjzvb');
+    
+    socket.on('disconnect', () => {
+        console.log(`user id ${socket.id} disconnected`);
+    });
+
+    socket.on('suggest-text', (data) => {
+        suggestions.push(data);
+        console.log(data);
+    });
+
+    // Keep a list of UID's that have opted to skip
+    // If a false is recieved remove that UID from the list
+    // Skip when there are enough people on the list
+    socket.on('skip', (data) => {
+        let vote = JSON.parse(data);
+        handleSkip(vote[0], vote[1]);
+    });
 });
 
 // Add new routes before this line!

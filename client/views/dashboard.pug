@@ -1,8 +1,11 @@
 extends default
 
 block append head
+    //- meta(name="id" content="#{userID}" id="user-id")
     script(defer src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js")
     script(defer src="socket.js")
+    script(src="switcher.js")
+    span(id="user-id" hidden) #{userID}
 
 block content
     div.m-3
@@ -17,17 +20,17 @@ block content
                 div(class="col-6")
                     div(class="jumbotron")
                         h4.text-center
-                            form
+                            form(id="skip-form")
                                 if skipActive === true
-                                    button(href="#" class="btn btn-primary btn-lg" role="button" id="skip-btn") Skip
+                                    button(class="btn btn-primary btn-lg" data-toggle="button" aria-pressed="false" autocomplete="off" role="button" id="skip-btn" onclick="toggleButtonState()" type="submit") Skip
                                 else
                                     div(class="alert alert-warning text-center" role="alert") Skipping is not active now.
-                                    button(href="#" class="btn btn-primary btn-lg disabled" tabindex="-1" role="button" id="skip-btn" aria-disabled="true") Skip
+                                    button(class="btn btn-primary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true") Skip
                 div(class="col-6")
                     div(class="")
-                        form(method="post")
+                        form(id="suggest-form")
                             div.form-group
                                 label(for="inputSpotifyURI") Suggest a Song
-                                input(type="text" class="form-control" name="inputSpotifyURI" id="suggest-input" placeholder="spotify:track:7Ghlk7Il098yCjg4BQjzvb")
+                                input(type="text" class="form-control" name="inputSpotifyURI" id="suggest-input" placeholder="spotify:track:7Ghlk7Il098yCjg4BQjzvb" autocomplete="off")
                                 br
                                 button(type="submit" class="btn btn-primary" id="suggest-btn") Suggest
