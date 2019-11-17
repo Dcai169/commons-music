@@ -69,17 +69,17 @@ function continueIfUnauth(req, res, next) {
 }
 
 function isOfDomain(req, res, next) {
-    if (req.user){
+    if (req.user._json.hd){
         if (req.user._json.hd.includes("wayland.k12.ma.us")){
             return next();
         }
     } else {
-        req.flash('error', 'Session Expired');
+        req.flash('error', 'Domain Error');
         return res.redirect('/logout');
     }
 
-    req.flash('error', 'Domain Error');
-    res.redirect('/logout');
+    req.flash('error', 'Session Expired');
+    return res.redirect('/logout');
 }
 
 // Passport session setup.
