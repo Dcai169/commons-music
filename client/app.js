@@ -17,6 +17,7 @@ const client_credentials = JSON.parse(fs.readFileSync('./client_secret.json', { 
 const scopes = ['email', 'profile'];
 
 const votesToSkip = [];
+const activeClients = [];
 const suggestions = [];
 
 // Function to remove array item by value
@@ -226,11 +227,10 @@ app.get('/app/suggestions', (req, res) => {
 });
 
 io.on('connection', socket => {
-    console.log(`user id ${socket.id} connected`);
-    // socket.emit('suggest-text', 'spotify:track:7Ghlk7Il098yCjg4BQjzvb');
+    activeClients.push(socket.id);
     
     socket.on('disconnect', () => {
-        console.log(`user id ${socket.id} disconnected`);
+        activeClients.push(socket.io);
     });
 
     socket.on('suggest-text', (data) => {
