@@ -217,6 +217,14 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
+app.get('/app/skips', (req, res) => {
+    res.send(JSON.stringify(votesToSkip));
+});
+
+app.get('/app/suggestions', (req, res) => {
+    res.send(JSON.stringify(suggestions));
+});
+
 io.on('connection', socket => {
     console.log(`user id ${socket.id} connected`);
     // socket.emit('suggest-text', 'spotify:track:7Ghlk7Il098yCjg4BQjzvb');
