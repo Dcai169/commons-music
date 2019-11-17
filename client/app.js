@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const httpPort = 2100;
-const socketPort = 2101;
+const server = require("http").createServer(app);
+const io = require('socket.io')(server);
+// const socketPort = 2101;
 
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
@@ -20,8 +22,8 @@ function isLunchFriday() {
     var isBeforeLunchStart = time.getHours() <= 11 && time.getMinutes() <= 44
     var isAfterLunchEnd = time.getHours() >= 13 && time.getMinutes() >= 12
     var isLunchHour = !isBeforeLunchStart && !isAfterLunchEnd;
-    return isFriday && isLunchHour;
-    // return true;
+    // return isFriday && isLunchHour;
+    return true;
 }
 
 // Middleware functions
@@ -42,8 +44,13 @@ function continueIfUnauth(req, res, next) {
 }
 
 function isOfDomain(req, res, next) {
-    if (req.user.emails[0].value.split("@")[1].includes("wayland.k12.ma.us")){
-        return next();
+    if (req.user){
+        if (req.user.emails[0].value.split("@")[1].includes("wayland.k12.ma.us")){
+            return next();
+        }
+    } else {
+        req.flash('error', 'Session Expired');
+        return res.redirect('/logout');
     }
 
     req.flash('error', 'Domain Error');
@@ -103,9 +110,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-app.listen(httpPort, () => {
-    console.log('Express running on port ' + httpPort);
-});
+// app.listen(httpPort, () => {
+//     console.log('Express running on port ' + httpPort);
+// });
+
+server.listen(httpPort, () => {
+    console.log('Server running on port ' + httpPort)
+    console.log('============')
+})
 
 app.get('/', continueIfUnauth, (req, res) => {
     res.render("home", {
@@ -180,6 +192,17 @@ app.get('/logout', (req, res) => {
     // res.render("logout");
     req.logout();
     res.redirect('/');
+});
+
+io.on('connection', socket => {
+    console.log("new user connected")
+    socket.emit('suggest-text', 'spotify:track:7Ghlk7Il098yCjg4BQjzvb');
+    // socket.on('disconnect', () => {
+    //     // code code code
+    // });
+    // socket.on('event', data => {
+    //     // code code code
+    // });
 });
 
 // Add new routes before this line!
