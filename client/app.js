@@ -226,6 +226,10 @@ app.get('/app/suggestions', (req, res) => {
     res.send(JSON.stringify(suggestions));
 });
 
+app.get('/app/actives', (req, res) => {
+    res.send(JSON.stringify(activeClients));
+});
+
 io.on('connection', socket => {
     activeClients.push(socket.id);
     
