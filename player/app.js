@@ -1,64 +1,56 @@
-const http = require('http');
-const skipConfig = {
-    hostname: 'commonsmusic.ddns.net',
-    port: 80,
-    path: '/app/skips',
-    method: 'GET'
+const socket = require('socket.io-client')('commonsmusic.ddns.net');
+// Number of votes required to skip
+const threshold = 2;
+// suggestions may not be needed
+const suggestions = [];
+var votesToSkip = [];
+
+// Function to remove array item by value
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
 };
-const suggestionsConfig = {
-    hostname: 'commonsmusic.ddns.net',
-    port: 80,
-    path: '/app/suggestions',
-    method: 'GET'
-};
-const activesConfig = {
-    hostname: 'commonsmusic.ddns.net',
-    port: 80,
-    path: '/app/actives',
-    method: 'GET'
-};
 
-function getSkips(){
-    var req = http.request(skipConfig, (res) => {
-        res.on('data', (data) => {
-            return data;
-        });
+function handleSkip(uid, vote) {
+    if (!votesToSkip.includes(uid) && vote){
+        votesToSkip.push(uid);
+    } else if (!vote){
+        votesToSkip.remove(uid);
+    }
 
-        res.on('error', (error) => {
-            return error;
-        });
-    });
-}
-
-function getSuggestions(){
-    var req = http.request(suggestionsConfig, (res) => {
-        res.on('data', (data) => {
-            return data;
-        });
-
-        res.on('error', (error) => {
-            return error;
-        });
-    });
-}
-
-function getActives(){
-    var req = http.request(activesConfig, (res) => {
-        res.on('data', (data) => {
-            return data;
-        });
-
-        res.on('error', (error) => {
-            return error;
-        });
-    });
+    if (votesToSkip.length > threshold){
+        votesToSkip = [];
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function isLunchFriday() {
     var time = new Date();
-    var isFriday = (time.getDay() == 5);
-    var isBeforeLunchStart = time.getHours() <= 11 && time.getMinutes() <= 44
-    var isAfterLunchEnd = time.getHours() >= 13 && time.getMinutes() >= 12
-    var isLunchHour = !isBeforeLunchStart && !isAfterLunchEnd;
-    return isFriday && isLunchHour;
+    var isLunchFriday = (time.getDay() == 5) && (!(time.getHours() <= 11 && time.getMinutes() <= 44) && !(time.getHours() >= 13 && time.getMinutes() >= 12));
+    return isLunchFriday;
 }
+
+socket.on('player-heartbeat', (data) => {
+    socket.emit('heartbeat-response', true);
+});
+
+socket.on('player-suggest', (data) => {
+    // append to playlist using spotify web api
+});
+
+socket.on('player-skip', (data) => {
+    let vote = JSON.parse(data);
+    // if new vote caused skip, broadcast reset signal
+    if(handleSkip(vote[0], vote[1])){
+        socket.emit('track-skipped', true);
+        // Skip the song using the spotify web api/playback sdk
+    }
+});
