@@ -2,6 +2,9 @@ const socket = require('socket.io-client')('commonsmusic.ddns.net');
 const express = require('express');
 const app = express();
 const port = 2102;
+const server = require("http").createServer(app);
+const io = require('socket.io')(server);
+
 const opn = require('opn');
 const spotifyWebApi = require('spotify-web-api-node');
 const fs = require('fs');
@@ -168,9 +171,10 @@ var spotifyApi = new spotifyWebApi({
 opn(spotifyApi.createAuthorizeURL(scopes, savedState), {app: 'firefox'});
 
 // Socket.IO setup
-socket.on('player-init', (data) => {
+io.on('player-init', (data) => {
     callWithRefreshCheck(activateShuffle, null);
     activeTrackIds = callWithRefreshCheck(getLivePlaylist, null);
+    console.log('player-init recieved');
 });
 
 socket.on('player-heartbeat', (data) => {
@@ -253,8 +257,6 @@ app.get('/debug/suggest', (req, res) => {
     res.send(callWithRefreshCheck(addSuggestion, req.query.s));
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
-
-spotifyApi

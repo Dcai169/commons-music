@@ -1,3 +1,5 @@
+const socket = io();
+
 window.onSpotifyWebPlaybackSDKReady = () => {
     const token = document.getElementById('access-token').innerHTML;
     const player = new Spotify.Player({
@@ -25,5 +27,12 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
     // Connect to the player!
-    player.connect();
+    player.connect().then(
+        function(data){
+            socket.emit('player-init', true);
+        },
+        function(err){
+            console.log(err);
+        }
+    );
   };

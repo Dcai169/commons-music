@@ -2,8 +2,10 @@ doctype html
 html(lang="en")
     head
         title Commons Music Player
+        script(src="https://sdk.scdn.co/spotify-player.js")
+        script(defer src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js")
+        script(defer src="music.js")
+
     body
         h1 Commons Music Player
         span(hidden id='access-token') #{accessToken}
-        script(src="https://sdk.scdn.co/spotify-player.js")
-        script(src="music.js")
