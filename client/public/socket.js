@@ -3,8 +3,11 @@ const suggestForm = document.getElementById('suggest-form');
 const suggestInput = document.getElementById('suggest-input');
 const skipForm = document.getElementById('skip-form');
 
-socket.on('suggest-text', data => {
-    console.log(data);
+socket.on('track-skipped', data => {
+    if (data) {
+        // reset button state to false
+        setButtonState(false);
+    }
 });
 
 suggestForm.addEventListener('submit', e => {
@@ -15,5 +18,5 @@ suggestForm.addEventListener('submit', e => {
 
 skipForm.addEventListener('click', e => {
     e.preventDefault();
-    socket.emit('skip', JSON.stringify([document.getElementById('user-id').innerHTML, getButtonState()]));
+    socket.emit('skip', JSON.stringify([document.getElementById('user-id').innerHTML, !getButtonState()]));
 });

@@ -5,7 +5,6 @@ block append head
     script(defer src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js")
     script(defer src="socket.js")
     script(src="switcher.js")
-    span(id="user-id" hidden) #{userID}
 
 block content
     div.m-3
@@ -34,3 +33,4 @@ block content
                                 input(type="text" class="form-control" name="inputSpotifyURI" id="suggest-input" placeholder="spotify:track:7Ghlk7Il098yCjg4BQjzvb" autocomplete="off")
                                 br
                                 button(type="submit" class="btn btn-primary" id="suggest-btn") Suggest
+            span(id="user-id" hidden) #{userID}
