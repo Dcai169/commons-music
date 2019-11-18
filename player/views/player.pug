@@ -1,0 +1,9 @@
+doctype html
+html(lang="en")
+    head
+        title Commons Music Player
+    body
+        h1 Commons Music Player
+        span(hidden id='access-token') #{accessToken}
+        script(src="https://sdk.scdn.co/spotify-player.js")
+        script(src="music.js")
