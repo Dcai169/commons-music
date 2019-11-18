@@ -6,8 +6,8 @@ var client_credentials = JSON.parse(fs.readFileSync("spotify_credentials.json").
 var id = client_credentials.id
 var secret = client_credentials.secret
 
-// var scopes = ['streaming', 'user-read-currently-playing', 'user-modify-playback-state', 'user-read-playback-state']
 var scopes = ["streaming", "user-read-email", "user-read-private"];
+var scopes = ['streaming', 'user-read-currently-playing', 'user-modify-playback-state', 'user-read-playback-state']
 var state = 'none'
 
 // // credentials are optional
