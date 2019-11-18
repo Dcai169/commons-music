@@ -16,21 +16,7 @@ const fs = require('fs');
 const client_credentials = JSON.parse(fs.readFileSync('./client_secret.json', { encoding: 'utf-8' }));
 const scopes = ['email', 'profile'];
 
-const votesToSkip = [];
 const activeClients = [];
-const suggestions = [];
-
-// Function to remove array item by value
-Array.prototype.remove = function() {
-    var what, a = arguments, L = a.length, ax;
-    while (L && this.length) {
-        what = a[--L];
-        while ((ax = this.indexOf(what)) !== -1) {
-            this.splice(ax, 1);
-        }
-    }
-    return this;
-};
 
 // is it lunchtime friday?
 function isLunchFriday() {
@@ -43,12 +29,11 @@ function isLunchFriday() {
     return true;
 }
 
-function handleSkip(uid, vote) {
-    if (!votesToSkip.includes(uid) && vote){
-        votesToSkip.push(uid);
-    } else if (!vote){
-        votesToSkip.remove(uid);
-    }
+async function isDaemonReady(){
+    io.emit('player-heartbeat');
+    io.on('heartbeat-response', (data) => {
+        return data;
+    });
 }
 
 // Middleware functions
@@ -135,10 +120,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-// app.listen(httpPort, () => {
-//     console.log('Express running on port ' + httpPort);
-// });
-
 server.listen(httpPort, () => {
     console.log('Server running on port ' + httpPort)
     console.log('============')
@@ -149,10 +130,6 @@ app.get('/', continueIfUnauth, (req, res) => {
         isAuth: req.isAuthenticated()
     });
 });
-
-// app.get('/lorem', (req, res) => {
-//     res.render("lorem");
-// });
 
 app.get('/test', (req, res) => {
     res.render("test", {
@@ -178,28 +155,11 @@ app.get('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
     });                     
 });
 
-// app.post('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
-//     console.log(req.body)
-//     res.render("dashboard", {
-//         isAuth: req.isAuthenticated(),
-//         suggestSuccess: 1,
-//         skipActive: isLunchFriday()
-//     });
-// });
-
-// app.get('/login', (req, res) => {
-//     res.render("login");
-// });
-
 app.get('/login', continueIfUnauth, passport.authenticate('google', { scope: scopes }));
 
 app.get('/denied', (req, res) => {
     res.render("denied");
 });
-
-// app.get('/auth_redirect', (req, res) => {
-//     res.render("auth_redirect");
-// });
 
 app.get('/auth_redirect', 
     passport.authenticate('google', {
@@ -208,12 +168,7 @@ app.get('/auth_redirect',
     }
 ));
 
-// app.get('/logout', (req, res) => {
-//     res.render("logout");
-// });
-
 app.get('/logout', (req, res) => {
-    // res.render("logout");
     req.logout();
     res.redirect('/');
 });
@@ -238,16 +193,14 @@ io.on('connection', socket => {
     });
 
     socket.on('suggest-text', (data) => {
-        suggestions.push(data);
-        console.log(data);
+        socket.emit('player-suggest', data);
     });
 
     // Keep a list of UID's that have opted to skip
     // If a false is recieved remove that UID from the list
     // Skip when there are enough people on the list
-    socket.on('skip', (data) => {
-        let vote = JSON.parse(data);
-        handleSkip(vote[0], vote[1]);
+    socket.on('skip', (data) => {        
+        socket.emit('player-skip', data);
     });
 });
 
