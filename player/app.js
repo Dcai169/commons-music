@@ -1,9 +1,18 @@
 const socket = require('socket.io-client')('commonsmusic.ddns.net');
+const spotifyWebApi = require('spotify-web-api-node');
+const fs = require('fs');
+const credentials = JSON.parse(fs.readFileSync("credentials.json").toString().trim());
 // Number of votes required to skip
 const threshold = 2;
 // suggestions may not be needed
 const suggestions = [];
 var votesToSkip = [];
+
+// TODO:
+// Use the client credentials flow
+// Get the credentials
+// Set shuffle to true
+// Start playing a randomly chosen song from playlist
 
 // Function to remove array item by value
 Array.prototype.remove = function() {
@@ -38,6 +47,38 @@ function isLunchFriday() {
     return isLunchFriday;
 }
 
+// credentials are optional
+var spotifyApi = new spotifyWebApi({
+    clientId: client.id,
+    clientSecret: client.secret,
+  });
+
+spotifyApi.clientCredentialsGrant().then(
+  function(data) {
+    // console.log('The access token expires in ' + data.body['expires_in']);
+    // console.log('The access token is ' + data.body['access_token']);
+
+    console.log(JSON.stringify(data));
+
+    // Save the access token so that it's used in future calls
+    spotifyApi.setAccessToken(data.body['access_token']);
+
+    // GET DAT DATA BOII
+    spotifyApi.getPlaylist('7cuCPpXRCCvfOZSIWgAJ7p')
+    .then(function(data) {
+      // console.log('Some information about this playlist:\n', data.body);
+      handle_response(data.body);
+    }, function(err) {
+      console.log('Something went wrong!', err);
+    });
+  },
+  function(err) {
+    console.log('The client ID is ' + spotifyApi.getClientId());
+    console.log('The client secret is ' + spotifyApi.getClientSecret());
+    console.log('Something went wrong when retrieving an access token', err);
+  }
+);
+
 socket.on('player-heartbeat', (data) => {
     socket.emit('heartbeat-response', true);
 });
@@ -54,3 +95,4 @@ socket.on('player-skip', (data) => {
         // Skip the song using the spotify web api/playback sdk
     }
 });
+
