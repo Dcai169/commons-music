@@ -193,7 +193,10 @@ io.on('connection', socket => {
     });
 
     socket.on('suggest-text', (data) => {
-        socket.emit('player-suggest', data);
+        let regex = RegExp('/spotify:track:[a-z0-9]+$/i');
+        if (regex.test(data)) {
+            socket.emit('player-suggest', data);
+        }
     });
 
     // Keep a list of UID's that have opted to skip
