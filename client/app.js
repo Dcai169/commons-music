@@ -20,11 +20,11 @@ const activeClients = [];
 
 // is it lunchtime friday?
 function isLunchFriday() {
-    var time = new Date();
-    var isFriday = (time.getDay() == 5);
-    var isBeforeLunchStart = time.getHours() <= 11 && time.getMinutes() <= 44
-    var isAfterLunchEnd = time.getHours() >= 13 && time.getMinutes() >= 12
-    var isLunchHour = !isBeforeLunchStart && !isAfterLunchEnd;
+    let time = new Date();
+    let isFriday = (time.getDay() == 5);
+    let isBeforeLunchStart = time.getHours() <= 11 && time.getMinutes() <= 44
+    let isAfterLunchEnd = time.getHours() >= 13 && time.getMinutes() >= 12
+    let isLunchHour = !isBeforeLunchStart && !isAfterLunchEnd;
     // return isFriday && isLunchHour;
     return true;
 }
