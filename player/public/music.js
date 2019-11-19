@@ -1,7 +1,8 @@
-const socket = io();
+const socket = io('http://localhost:2102');
+let deviceId;
 
 window.onSpotifyWebPlaybackSDKReady = () => {
-    const token = document.getElementById('access-token').innerHTML;
+    const token = document.getElementById('access-token').innerText;
     const player = new Spotify.Player({
       name: 'Commons Music',
       getOAuthToken: cb => { cb(token); }
@@ -18,21 +19,34 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     // Ready
     player.addListener('ready', ({ device_id }) => {
+      deviceId = device_id;
       console.log('Ready with Device ID', device_id);
     });
 
     // Not Ready
     player.addListener('not_ready', ({ device_id }) => {
+      deviceId = null;
       console.log('Device ID has gone offline', device_id);
     });
 
     // Connect to the player!
     player.connect().then(
         function(data){
-            socket.emit('player-init', true);
+            setTimeout(() => {
+                console.log('player ready');
+                socket.emit('player-init', deviceId);
+            }, 3000);
         },
         function(err){
             console.log(err);
         }
     );
-  };
+};
+
+socket.on('player-init', (data) => {
+    console.log('player-init recieved\n', data);
+});
+
+socket.on('track-skipped', (data) => {
+    console.log('Track skipped recieved\n', data);
+});

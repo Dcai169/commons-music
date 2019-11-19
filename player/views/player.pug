@@ -1,3 +1,4 @@
+- var debug = true;
 doctype html
 html(lang="en")
     head
@@ -5,7 +6,15 @@ html(lang="en")
         script(src="https://sdk.scdn.co/spotify-player.js")
         script(defer src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js")
         script(defer src="music.js")
+        if (debug)
+            script(defer src="debug.js")
 
     body
         h1 Commons Music Player
         span(hidden id='access-token') #{accessToken}
+        if (debug)
+            form(id='debug-form')
+                input(type="text" name="event-name" id="event-name" placeholder="Event Name" autocomplete="off")
+                input(type="text" name="params" id="params" placeholder="Parameters" autocomplete="off")
+                button(type="submit" id="submit-btn") Submit
+            
