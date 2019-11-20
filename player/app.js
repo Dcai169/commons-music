@@ -14,7 +14,8 @@ const credentials = JSON.parse(fs.readFileSync("credentials.json").toString().tr
 const threshold = 30;
 let votesToSkip = [];
 
-const activePlaylistId = 'spotify:playlist:7cuCPpXRCCvfOZSIWgAJ7p';
+// const activePlaylistId = 'spotify:playlist:7cuCPpXRCCvfOZSIWgAJ7p';
+const activePlaylistId = 'spotify:playlist:58j2v4GNg6jjAGD6JwNTK5';
 const suggestionPlaylistId = '';
 let activeDeviceId;
 
