@@ -1,4 +1,4 @@
-const socket = require('socket.io-client')('commonsmusic.ddns.net');
+const serverSocket = require('socket.io-client')('commonsmusic.ddns.net');
 const express = require('express');
 const app = express();
 const port = 2102;
@@ -11,7 +11,7 @@ const fs = require('fs');
 const credentials = JSON.parse(fs.readFileSync("credentials.json").toString().trim());
 
 // Number of votes required to skip
-const threshold = 1;
+const threshold = 30;
 let votesToSkip = [];
 
 const activePlaylistId = 'spotify:playlist:7cuCPpXRCCvfOZSIWgAJ7p';
@@ -46,9 +46,9 @@ function handleSkip(uid, vote) {
         votesToSkip.remove(uid);
     }
 
-    console.log(votesToSkip);
+    console.log({votesToSkip});
 
-    if (votesToSkip.length > threshold){
+    if (votesToSkip.length >= threshold){
         votesToSkip = [];
         return true;
     } else {
@@ -94,8 +94,6 @@ function skipTrack(){
         function(data){
             // code
             console.log("Skip!")
-            console.log({data});
-            return data;
         },
         function(err){
             console.log('Could not skip to next\n', err);
@@ -105,15 +103,19 @@ function skipTrack(){
 }
 
 function addSuggestion(suggestionId){
-    spotifyApi.addTracksToPlaylist(suggestionPlaylistId, [suggestionId]).then(
-        function(data){
-            return data;
-        },
-        function(err){
-            console.log('Could not add track', err);
-            return null;
-        }
-    );
+    if(!!suggestionId){
+        spotifyApi.addTracksToPlaylist(suggestionPlaylistId, [suggestionId]).then(
+            function(data){
+                return data;
+            },
+            function(err){
+                console.log('Could not add track', err);
+                return null;
+            }
+        );
+    } else {
+        console.log({suggestionId});
+    }
 }
 
 function getPlaybackState(){
@@ -128,16 +130,15 @@ function getPlaybackState(){
     )
 }
 
-function transferToNewActiveDevice(){
+function transferToNewActiveDevice(newId){
     spotifyApi.transferMyPlayback({
-        device_ids: [activeDeviceId], 
-        // play: false 
+        deviceIds: [activeDeviceId]
     }).then(
         function(data){
-            console.log('Transfer Success', data);
+            console.log('Transfer Success\n'); // , data);
         },
         function(err){
-            console.log('Could not transfer playback\n', err);
+            console.log(`Could not transfer playback to ID ${newId}\n`, err);
         }
     );
 }
@@ -155,18 +156,13 @@ function callWithRefreshCheck(fn, args){
     }
 }
 
-function setup(){
-    callWithRefreshCheck(activateShuffle, null);
-    callWithRefreshCheck(transferToNewActiveDevice, null);
-}
-
 function commencePlayback(){
     spotifyApi.play({ context_uri: activePlaylistId }).then(
         function(data){
 
         },
         function(err){
-            console.log('Could not start playback\n', err);
+            console.log('Could not resume playback\n', err);
         }
     );
 }
@@ -174,7 +170,15 @@ function commencePlayback(){
 function haltPlayback(){
     spotifyApi.pause().then(
         function(data){
-
+            console.log('Playback Paused')
+            spotifyApi.seek(0).then(
+                function(data){
+                    console.log('Rewound to 0');
+                },
+                function(err){
+                    console.log('Could not rewind to 0\n', err);
+                }
+            );
         },
         function(err){
             console.log('Could not stop playback\n', err);
@@ -193,6 +197,35 @@ function getMe(){
     )
 }
 
+function start(){
+    spotifyApi.transferMyPlayback({
+        deviceIds: [activeDeviceId]
+    }).then(
+        function(data){
+            console.log('Transfer Success\n'); // , data);
+            spotifyApi.setShuffle({state: "true"}).then(                
+                function(data){
+                    console.log('Shuffle set to true');
+                    spotifyApi.seek(0).then(
+                        function(data){
+                            console.log('Rewound to 0');
+                        },
+                        function(err){
+                            console.log('Could not rewind to 0\n', err);
+                        }
+                    );
+                },
+                function(err){
+                    console.log('Could not set shuffle state to true\n', err);
+                }
+            );
+        },
+        function(err){
+            console.log(`Could not transfer playback to ID ${activeDeviceId}\n`, err);
+        }
+    );
+}
+
 // credentials are optional
 let spotifyApi = new spotifyWebApi({
     clientId: credentials.id,
@@ -206,33 +239,57 @@ opn(spotifyApi.createAuthorizeURL(scopes, savedState), {app: 'firefox'});
 io.on('connection', (socket) => {
     socket.on('player-init', (data) => {
         if (!!data){
-            activeDeviceId = data;
-            setup();
+            console.log({'Device ID': data});
+            activeDeviceId = data
+            refreshToken();
+            start();
         }
-    });
-
-    socket.on('player-suggest', (data) => {
-        // append to playlist using spotify web api
-        callWithRefreshCheck(addSuggestion, data);
     });
 
     socket.on('player-skip', (data) => {
         let vote = JSON.parse(data);
         // if new vote caused skip, broadcast reset signal
         if(handleSkip(vote[0], vote[1])){
-            socket.emit('track-skipped', true);
+            serverSocket.emit('track-skipped', true);
             callWithRefreshCheck(skipTrack, null);
         }
-    });
-
-    socket.on('player-meta-request', (data) => {
-        socket.emit('player-meta-response', callWithRefreshCheck(getPlaybackState, null));
     });
 
     socket.on('sudo-skip', (data) => {
         callWithRefreshCheck(skipTrack, null);
     });
+
+    socket.on('sudo-resume', (data) => {
+        callWithRefreshCheck(commencePlayback, null);
+    });
+
+    socket.on('sudo-stop', (data) => {
+        callWithRefreshCheck(haltPlayback, null);
+    });
+
+    socket.on('sudo-init', (data) => {
+        callWithRefreshCheck(setup, null);
+    });
 });
+
+serverSocket.on('player-suggest', (data) => {
+    // append to playlist using spotify web api
+    callWithRefreshCheck(addSuggestion, data);
+});
+
+serverSocket.on('player-skip', (data) => {
+    let vote = JSON.parse(data);
+    // if new vote caused skip, broadcast reset signal
+    if(handleSkip(vote[0], vote[1])){
+        serverSocket.emit('track-skipped', true);
+        callWithRefreshCheck(skipTrack, null);
+    }
+});
+
+serverSocket.on('player-meta-request', (data) => {
+    socket.emit('player-meta-response', callWithRefreshCheck(getPlaybackState, null));
+});
+
 // Express routes
 app.set('view engine', 'pug');
 app.use(express.static(__dirname + "/public"));
@@ -263,7 +320,8 @@ app.get('/auth_redirect', (req, res) => {
                     let now = new Date();
                     expiresAt = new Date(now.getFullYear(), now.getMonth(), now.getDay(), now.getHours()+1, now.getMinutes(), now.getSeconds(), now.getMilliseconds());
                     res.redirect('/');
-                    console.log(spotifyApi.getAccessToken());
+                    let accessToken = spotifyApi.getAccessToken();
+                    console.log({accessToken});
                 } else {
                     res.send('Credential Error');
                 }
@@ -286,6 +344,10 @@ server.listen(port, () => {
 
 startJob = schedule.scheduleJob('44 11 * * 5', commencePlayback);
 endJob = schedule.scheduleJob('12 13 * * 5', haltPlayback);
+
+// Test
+// startJob = schedule.scheduleJob('51 8 * * 3', commencePlayback);
+// endJob = schedule.scheduleJob('0 9 * * 3', haltPlayback);
 
 // setTimeout(commencePlayback, 10000);
 // setTimeout(getMe, 10000);

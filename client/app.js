@@ -25,8 +25,8 @@ function isLunchFriday() {
     let isBeforeLunchStart = time.getHours() <= 11 && time.getMinutes() <= 44
     let isAfterLunchEnd = time.getHours() >= 13 && time.getMinutes() >= 12
     let isLunchHour = !isBeforeLunchStart && !isAfterLunchEnd;
-    // return isFriday && isLunchHour;
-    return true;
+    return isFriday && isLunchHour;
+    // return true;
 }
 
 async function isDaemonReady(){
