@@ -11,7 +11,7 @@ const fs = require('fs');
 const credentials = JSON.parse(fs.readFileSync("credentials.json").toString().trim());
 
 // Number of votes required to skip
-const threshold = 2;
+const threshold = 15;
 let votesToSkip = [];
 
 // const activePlaylistId = 'spotify:playlist:7cuCPpXRCCvfOZSIWgAJ7p';
