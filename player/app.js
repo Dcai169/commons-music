@@ -1,9 +1,9 @@
-const serverSocket = require('socket.io-client')('commonsmusic.ddns.net');
+const serverSocket = require('socket.io-client')('http://commonsmusic.ddns.net');
 const express = require('express');
 const app = express();
 const port = 2102;
 const server = require("http").createServer(app);
-const io = require('socket.io')(server);
+const playerIO = require('socket.io')(server);
 const schedule = require('node-schedule');
 const opn = require('opn');
 const spotifyWebApi = require('spotify-web-api-node');
@@ -11,7 +11,7 @@ const fs = require('fs');
 const credentials = JSON.parse(fs.readFileSync("credentials.json").toString().trim());
 
 // Number of votes required to skip
-const threshold = 30;
+const threshold = 1;
 let votesToSkip = [];
 
 // const activePlaylistId = 'spotify:playlist:7cuCPpXRCCvfOZSIWgAJ7p';
@@ -237,7 +237,7 @@ let spotifyApi = new spotifyWebApi({
 opn(spotifyApi.createAuthorizeURL(scopes, savedState), {app: 'firefox'});
 
 // Socket.IO setup
-io.on('connection', (socket) => {
+playerIO.on('connection', (socket) => {
     socket.on('player-init', (data) => {
         if (!!data){
             console.log({'Device ID': data});
@@ -247,14 +247,14 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('player-skip', (data) => {
-        let vote = JSON.parse(data);
-        // if new vote caused skip, broadcast reset signal
-        if(handleSkip(vote[0], vote[1])){
-            serverSocket.emit('track-skipped', true);
-            callWithRefreshCheck(skipTrack, null);
-        }
-    });
+    // socket.on('player-skip', (data) => {
+    //     let vote = JSON.parse(data);
+    //     // if new vote caused skip, broadcast reset signal
+    //     if(handleSkip(vote[0], vote[1])){
+    //         serverSocket.emit('track-skipped', true);
+    //         callWithRefreshCheck(skipTrack, null);
+    //     }
+    // });
 
     socket.on('sudo-skip', (data) => {
         callWithRefreshCheck(skipTrack, null);
@@ -280,6 +280,7 @@ serverSocket.on('player-suggest', (data) => {
 
 serverSocket.on('player-skip', (data) => {
     let vote = JSON.parse(data);
+    console.log({'player-skip': data});
     // if new vote caused skip, broadcast reset signal
     if(handleSkip(vote[0], vote[1])){
         serverSocket.emit('track-skipped', true);
@@ -287,8 +288,14 @@ serverSocket.on('player-skip', (data) => {
     }
 });
 
+serverSocket.on('connect', (data) => {console.log(`${serverSocket.id} Connected\n`, data)});
+
 serverSocket.on('player-meta-request', (data) => {
     socket.emit('player-meta-response', callWithRefreshCheck(getPlaybackState, null));
+});
+
+serverSocket.on('event', (data) => {
+    console.log('event\n', data);
 });
 
 // Express routes
@@ -350,5 +357,4 @@ endJob = schedule.scheduleJob('12 13 * * 5', haltPlayback);
 // startJob = schedule.scheduleJob('51 8 * * 3', commencePlayback);
 // endJob = schedule.scheduleJob('0 9 * * 3', haltPlayback);
 
-// setTimeout(commencePlayback, 10000);
 // setTimeout(getMe, 10000);
