@@ -1,0 +1,15 @@
+extends default
+
+block content
+    script(defer src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js")
+    script(defer src="debug.js")
+
+
+    div.container
+        div(class="m-3")
+            form(id="debug-form")
+                div.form-group
+                    input(type="text" class="form-control" name="event" id="event-input" placeholder="Event Name" autocomplete="off")
+                    input(type="text" class="form-control" name="value" id="value-input" placeholder="Value Name" autocomplete="off")
+                    br
+                    button(type="submit" class="btn btn-primary" id="suggest-btn") Suggest

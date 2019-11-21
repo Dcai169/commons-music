@@ -25,8 +25,8 @@ function isLunchFriday() {
     let isBeforeLunchStart = time.getHours() <= 11 && time.getMinutes() <= 44
     let isAfterLunchEnd = time.getHours() >= 13 && time.getMinutes() >= 12
     let isLunchHour = !isBeforeLunchStart && !isAfterLunchEnd;
-    return isFriday && isLunchHour;
-    // return true;
+    // return isFriday && isLunchHour;
+    return true;
 }
 
 async function isDaemonReady(){
@@ -185,11 +185,15 @@ app.get('/app/actives', (req, res) => {
     res.send(JSON.stringify(activeClients));
 });
 
+app.get('/debug', (req, res) => {
+    res.render('debug');
+});
+
 io.on('connection', socket => {
-    activeClients.push(socket.id);
+    console.log(socket.id + ' connected');
     
     socket.on('disconnect', () => {
-        activeClients.push(socket.io);
+        console.log(socket.id + ' disconnected');
     });
 
     socket.on('suggest-text', (data) => {
@@ -204,6 +208,17 @@ io.on('connection', socket => {
     // Skip when there are enough people on the list
     socket.on('skip', (data) => {        
         socket.emit('player-skip', data);
+        console.log({'player-skip': data});
+    });
+
+    socket.on('event', (data) => {
+        console.log('event\n', data);
+    });
+
+    socket.on('forward', (data) => {
+        let cmd = JSON.parse(data);
+        console.log({cmd});
+        socket.emit(cmd[0], cmd[1]);
     });
 });
 
