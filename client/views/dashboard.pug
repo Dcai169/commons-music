@@ -21,6 +21,7 @@ block content
                         h4.text-center
                             form(id="skip-form")
                                 if skipActive === true
+                                    h3(id="votes-remaining")
                                     button(class="btn btn-primary btn-lg" data-toggle="button" aria-pressed="false" autocomplete="off" role="button" id="skip-btn" onclick="toggleButtonState()" type="submit") Skip
                                 else
                                     div(class="alert alert-warning text-center" role="alert") Skipping is not active now.
