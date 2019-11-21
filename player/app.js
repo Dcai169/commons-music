@@ -47,7 +47,7 @@ function handleSkip(uid, vote) {
         votesToSkip.remove(uid);
     }
 
-    console.log({votesToSkip});
+    // console.log({votesToSkip});
 
     if (votesToSkip.length >= threshold){
         votesToSkip = [];
@@ -283,7 +283,7 @@ serverSocket.on('player-skip', (data) => {
     console.log({'player-skip': data});
     // if new vote caused skip, broadcast reset signal
     if(handleSkip(vote[0], vote[1])){
-        serverSocket.emit('track-skipped', true);
+        serverSocket.emit('track-skipped', null);
         callWithRefreshCheck(skipTrack, null);
     }
 });
