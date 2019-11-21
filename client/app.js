@@ -16,7 +16,19 @@ const fs = require('fs');
 const client_credentials = JSON.parse(fs.readFileSync('./client_secret.json', { encoding: 'utf-8' }));
 const scopes = ['email', 'profile'];
 
-const activeClients = [];
+const votesToSkip = [];
+
+// Function to remove array item by value
+Array.prototype.remove = function() {
+    let what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
 
 // is it lunchtime friday?
 function isLunchFriday() {
@@ -199,7 +211,7 @@ io.on('connection', socket => {
     socket.on('suggest-text', (data) => {
         let regex = RegExp('/spotify:track:[a-z0-9]+$/i');
         if (regex.test(data)) {
-            socket.emit('player-suggest', data);
+            io.sockets.emit('player-suggest', data);
         }
     });
 
@@ -207,7 +219,15 @@ io.on('connection', socket => {
     // If a false is recieved remove that UID from the list
     // Skip when there are enough people on the list
     socket.on('skip', (data) => {        
-        socket.emit('player-skip', data);
+        // socket.emit('player-skip', data);
+        let vote = JSON.parse(data);
+        if (!votesToSkip.includes(vote[0]) && vote[1]){
+            votesToSkip.push(vote[0]);
+        } else if (!vote[1]){
+            votesToSkip.remove(vote[0]);
+        }
+        io.sockets.emit('player-skip', data);
+        // io.sockets.emit('vote-length', votesToSkip.length);
         console.log({'player-skip': data});
     });
 
@@ -218,7 +238,11 @@ io.on('connection', socket => {
     socket.on('forward', (data) => {
         let cmd = JSON.parse(data);
         console.log({cmd});
-        socket.emit(cmd[0], cmd[1]);
+        io.sockets.emit(cmd[0], cmd[1]);
+    });
+
+    socket.on('track-skipped', (data) => {
+        io.sockets.emit('button-reset', null);
     });
 });
 

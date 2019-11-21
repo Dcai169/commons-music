@@ -3,6 +3,8 @@ const eventNameInput = document.getElementById('event-input');
 const parameters = document.getElementById('value-input');
 const socket = io();
 
+console.log(socket.id);
+
 debugForm.addEventListener('submit', (e) => {
     e.preventDefault();
     let event = eventNameInput.value;
