@@ -11,7 +11,7 @@ const fs = require('fs');
 const credentials = JSON.parse(fs.readFileSync("credentials.json").toString().trim());
 
 // Number of votes required to skip
-const threshold = 1;
+const threshold = 2;
 let votesToSkip = [];
 
 // const activePlaylistId = 'spotify:playlist:7cuCPpXRCCvfOZSIWgAJ7p';
@@ -240,7 +240,6 @@ opn(spotifyApi.createAuthorizeURL(scopes, savedState), {app: 'firefox'});
 playerIO.on('connection', (socket) => {
     socket.on('player-init', (data) => {
         if (!!data){
-            console.log({'Device ID': data});
             activeDeviceId = data
             refreshToken();
             start();
@@ -329,7 +328,7 @@ app.get('/auth_redirect', (req, res) => {
                     expiresAt = new Date(now.getFullYear(), now.getMonth(), now.getDay(), now.getHours()+1, now.getMinutes(), now.getSeconds(), now.getMilliseconds());
                     res.redirect('/');
                     let accessToken = spotifyApi.getAccessToken();
-                    console.log({accessToken});
+                    // console.log({accessToken});
                 } else {
                     res.send('Credential Error');
                 }
