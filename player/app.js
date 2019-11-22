@@ -28,6 +28,15 @@ let code;
 let startJob;
 let endJob;
 
+// TODO:
+// Client facing vote count
+// Fix autostart
+// Proper suggestion
+// Client facing currently playing
+// Client facing up next
+// Reduce the threshold as the track plays
+// make url shorter
+
 // Function to remove array item by value
 Array.prototype.remove = function() {
     let what, a = arguments, L = a.length, ax;
@@ -48,6 +57,7 @@ function handleSkip(uid, vote) {
     }
 
     // console.log({votesToSkip});
+    console.log(votesToSkip.length)
 
     if (votesToSkip.length >= threshold){
         votesToSkip = [];
