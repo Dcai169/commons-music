@@ -23,3 +23,23 @@ function setButtonState(state){
         button.addClass('btn-primary')
     }
 }
+
+function setTrackDetails(img_url, title, artists){
+    let img = $('#album-art');
+    let trackTitle = $('#track-title');
+    let trackArtists = $('#track-artists');
+    let artistString = "";
+
+    artists.forEach((value, index, array) => {
+        artistString += value['name'];
+        if (index < array.length-1){
+            artistString += ", ";
+        }
+    });
+
+    img.attr('src', img_url);
+    trackTitle.text(title);
+    trackArtists.text(artistString);
+}
+
+

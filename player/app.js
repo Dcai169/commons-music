@@ -1,4 +1,5 @@
-const serverSocket = require('socket.io-client')('http://commonsmusic.ddns.net');
+// const serverSocket = require('socket.io-client')('http://commonsmusic.ddns.net');
+const serverSocket = require('socket.io-client')('http://localhost')
 const express = require('express');
 const app = express();
 const port = 2102;
@@ -11,7 +12,7 @@ const fs = require('fs');
 const credentials = JSON.parse(fs.readFileSync("credentials.json").toString().trim());
 
 // Number of votes required to skip
-const threshold = 15;
+const threshold = 1;
 let votesToSkip = [];
 
 // const activePlaylistId = 'spotify:playlist:7cuCPpXRCCvfOZSIWgAJ7p';
@@ -256,14 +257,20 @@ playerIO.on('connection', (socket) => {
         }
     });
 
-    // socket.on('player-skip', (data) => {
-    //     let vote = JSON.parse(data);
-    //     // if new vote caused skip, broadcast reset signal
-    //     if(handleSkip(vote[0], vote[1])){
-    //         serverSocket.emit('track-skipped', true);
-    //         callWithRefreshCheck(skipTrack, null);
-    //     }
-    // });
+    socket.on('player-skip', (data) => {
+        let vote = JSON.parse(data);
+        // if new vote caused skip, broadcast reset signal
+        if(handleSkip(vote[0], vote[1])){
+            serverSocket.emit('track-skipped', true);
+            callWithRefreshCheck(skipTrack, null);
+        }
+    });
+
+    socket.on('player-state', (data) => {
+        console.log('player-state event received');
+        serverSocket.emit('dashboard-state', data);
+        console.log('dashboard-state event emitted');
+    });
 
     socket.on('sudo-skip', (data) => {
         callWithRefreshCheck(skipTrack, null);
@@ -357,6 +364,7 @@ app.get('/auth_redirect', (req, res) => {
 
 server.listen(port, () => {
     console.log(`Server listening on port ${port}`);
+    console.log(`Server Socket with id ${serverSocket.id}`);
 });
 
 startJob = schedule.scheduleJob('44 11 * * 5', commencePlayback);

@@ -4,7 +4,7 @@ block append head
     //- meta(name="id" content="#{userID}" id="user-id")
     script(defer src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js")
     script(defer src="socket.js")
-    script(src="switcher.js")
+    script(defer src="switcher.js")
 
 block content
     div.m-3
@@ -15,6 +15,11 @@ block content
                         div(class="alert alert-success alert-dismissible fade show" role="alert") Thanks for your suggestion!
                             button(type="button" class="close" data-dismiss="alert" aria-label="Close")
                                 span(aria-hidden="true") &times;
+            div.row
+                div.col-12
+                    img(id="album-art" src="" alt="")
+                    h3(id="track-title")
+                    h5(id="track-artists")
             div.row
                 div(class="col-6")
                     div(class="jumbotron")

@@ -50,33 +50,35 @@ async function isDaemonReady(){
 
 // Middleware functions
 function continueIfAuth(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
+    // if (req.isAuthenticated()) {
+    //     return next();
+    // }
 
-    res.redirect('/login');
+    // res.redirect('/login');
+    return next();
 }
 
 function continueIfUnauth(req, res, next) {
-    if (req.isAuthenticated()) {
-        return res.redirect('/dashboard')
-    }
+    // if (req.isAuthenticated()) {
+    //     return res.redirect('/dashboard')
+    // }
 
     next();
 }
 
 function isOfDomain(req, res, next) {
-    if (req.user._json.hd){
-        if (req.user._json.hd.includes("wayland.k12.ma.us")){
-            return next();
-        }
-    } else {
-        req.flash('error', 'Domain Error');
-        return res.redirect('/logout');
-    }
+    // if (req.user._json.hd){
+    //     if (req.user._json.hd.includes("wayland.k12.ma.us")){
+    //         return next();
+    //     }
+    // } else {
+    //     req.flash('error', 'Domain Error');
+    //     return res.redirect('/logout');
+    // }
 
-    req.flash('error', 'Session Expired');
-    return res.redirect('/logout');
+    // req.flash('error', 'Session Expired');
+    // return res.redirect('/logout');
+    return next();
 }
 
 // Passport session setup.
@@ -161,7 +163,7 @@ app.get('/about', (req, res) => {
 app.get('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
     res.render("dashboard", {
         isAuth: req.isAuthenticated(),
-        userID: req.user._json.sub,
+        userID: 0, // req.user._json.sub,
         suggestSuccess: -1,
         skipActive: isLunchFriday()
     });                     
@@ -243,6 +245,12 @@ io.on('connection', socket => {
 
     socket.on('track-skipped', (data) => {
         io.sockets.emit('button-reset', null);
+    });
+
+    socket.on('dashboard-state', (data) => {
+        console.log('dashboard-state event received');
+        io.sockets.emit('dashboard-update', data);
+        console.log('dashboard-update emitted')
     });
 });
 
