@@ -164,7 +164,7 @@ app.get('/dashboard', isOfDomain, continueIfAuth, (req, res) => {
     res.render("dashboard", {
         isAuth: req.isAuthenticated(),
         userID: 0, // req.user._json.sub,
-        suggestSuccess: -1,
+        suggestionSuccess: -1,
         skipActive: isLunchFriday()
     });                     
 });
